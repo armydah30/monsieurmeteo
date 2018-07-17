@@ -306,11 +306,9 @@ def edit_post(id):
         form.body.data = post.body
 
         if request.method == 'POST' and form.validate():
-            title = request.form['title']
-            body = request.form['body']
+            post.title = request.form['title']
+            post.body = request.form['body']
 
-            post = Posts(title=title, body=body, create_date=datetime.now())
-            db.session.add(post)
             db.session.commit()
 
             flash('Post Updated', 'success')
@@ -338,14 +336,12 @@ def edit_rule(id):
         form.variable.data = rule.value
 
         if request.method == 'POST' and form.validate():
-            crop = request.form['crop']
-            advice = request.form['advice']
-            weather = request.form['weather']
-            weather_condition = request.form['weather_condition']
-            value = request.form['variable']
+            rule.crop = request.form['crop']
+            rule.advice = request.form['advice']
+            rule.weather = request.form['weather']
+            rule.weather_condition = request.form['weather_condition']
+            rule.value = request.form['variable']
 
-            rule = Rules(crop=crop, advice=advice, weather=weather, weather_condition=weather_condition, value=value, create_date=datetime.now())
-            db.session.add(rule)
             db.session.commit()
 
             flash('Rule Updated', 'success')
