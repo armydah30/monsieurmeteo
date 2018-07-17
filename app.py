@@ -13,12 +13,13 @@ from datetime import datetime, timedelta
 import math
 
 app = Flask(__name__)
-app.debug = False
+app.debug = True
 app.config['SECRET_KEY'] = '12345'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mrmeteo2.db'
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
-#config mySQL
+
+#add Database Views
 class Posts(db.Model):
     id =db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
@@ -328,12 +329,6 @@ def edit_rule(id):
         #get form
         form = RuleForm(request.form)
 
-        #ppulate post form fields
-        form.crop.data = rule.crop
-        form.advice.data = rule.advice
-        form.weather.data = rule.weather
-        form.weather_condition.data = rule.weather_condition
-        form.variable.data = rule.value
 
         if request.method == 'POST' and form.validate():
             rule.crop = request.form['crop']
