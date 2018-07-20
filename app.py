@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 import math
 
 app = Flask(__name__)
-app.debug = True
+app.debug = False
 app.config['SECRET_KEY'] = '12345'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mrmeteo2.db'
 db = SQLAlchemy(app)
@@ -51,7 +51,7 @@ def index():
     g = geocoder.ip('me')
     lat = str(g.lat)
     lon = str(g.lng)
-    url = 'https://api.openweathermap.org/data/2.5/forecast?lat=9.072264&lon=7.491302&units=metric&appid=454d3e3138f204980589ae958b2a9728'
+    url = 'https://api.openweathermap.org/data/2.5/forecast?lat=12.3657&lon=-1.5339&units=metric&appid=454d3e3138f204980589ae958b2a9728'
     # url = 'https://api.openweathermap.org/data/2.5/forecast?lat=' + lat + '&lon=' + lon + '&units=metric&appid=454d3e3138f204980589ae958b2a9728'
     result = requests.get(url).json()
     all_data = result['list']
