@@ -24,7 +24,7 @@
             <a class="nav-link" id="day-3" data-toggle="tab" href="#forecast3" role="tab" aria-controls="contact" aria-selected="false">{{context['weather'][3].dt}}</a>
             </li>
             <li class="nav-item">
-            <a class="nav-link" id="day-4" data-toggle="tab" href="#forecast4" role="tab" aria-controls="contact" aria-selected="false">{{context['weather'][4].dt}}</a>
+            <a class="nav-link" id="day-4" data-toggle="tab" href="#forecast4" role="tab" aria-controls="contact" aria-selected="false">Thursday</a>
             </li>
           </ul>
           <div class="tab-content message" id="myTabContent">
@@ -105,7 +105,11 @@
                     </div>
                   </div>
                   <div class= "">
-                     <h1>{{context.crop}}</h1>
+                    {% if context.crop == None %}
+                      <h1>Please select crop</h1>
+                    {% else %}
+                      <h1>{{context.crop}}</h1>
+                    {% endif %}
                      <div class="describe">
                        <ul class="list-group">
                        {% for rule in context.rules %}
@@ -243,7 +247,8 @@
                     <form action="{{ url_for('index') }}" method="post">
                       <div class="form-group">
                           <select class="form-control" id="selected_crop" name="selected_crop">
-                              <option value="sorghum" selected>Sorghum</option>
+                              <option value="" selected></option>
+                              <option value="sorghum">Sorghum</option>
                               <option value="maize">Maize</option>
                           </select>
                       </div>
@@ -254,7 +259,11 @@
                   </div>
                 </div>
                 <div class= "">
-                   <h1>{{context.crop}}</h1>
+                  {% if context.crop == None %}
+                    <h1>Please select crop</h1>
+                  {% else %}
+                    <h1>{{context.crop}}</h1>
+                  {% endif %}
                    <div class="describe">
                      <ul class="list-group">
                      {% for rule in context.rules %}
@@ -392,7 +401,8 @@
                     <form action="{{ url_for('index') }}" method="post">
                       <div class="form-group">
                           <select class="form-control" id="selected_crop" name="selected_crop">
-                              <option value="sorghum" selected>Sorghum</option>
+                              <option value="" selected></option>
+                              <option value="sorghum">Sorghum</option>
                               <option value="maize">Maize</option>
                           </select>
                       </div>
@@ -403,7 +413,11 @@
                   </div>
                 </div>
                 <div class= "">
-                   <h1>{{context.crop}}</h1>
+                  {% if context.crop == None %}
+                    <h1>Please select crop</h1>
+                  {% else %}
+                    <h1>{{context.crop}}</h1>
+                  {% endif %}
                    <div class="describe">
                      <ul class="list-group">
                      {% for rule in context.rules %}
@@ -421,7 +435,6 @@
                                  {% if context['weather'][3]['wind'].speed == rule.value %}
                                    <li class="list-group-item">{{rule.advice}}</li>
                                  {% endif %}
-
                                {% endif %}
                            {% endif %}
                            {% if rule.weather == 'temperature' %}
@@ -470,7 +483,6 @@
                                  {% endif %}
                                {% endif %}
                            {% endif %}
-
                        {% endif %}
                      {% endfor %}
                       </ul>
@@ -543,7 +555,8 @@
                     <form action="{{ url_for('index') }}" method="post">
                       <div class="form-group">
                           <select class="form-control" id="selected_crop" name="selected_crop">
-                              <option value="sorghum" selected>Sorghum</option>
+                              <option value="Please Select Crop" selected></option>
+                              <option value="sorghum">Sorghum</option>
                               <option value="maize">Maize</option>
                           </select>
                       </div>
@@ -554,7 +567,11 @@
                   </div>
                 </div>
                 <div class= "">
-                   <h1>{{context.crop}}</h1>
+                  {% if context.crop == None %}
+                    <h1>Please select crop</h1>
+                  {% else %}
+                    <h1>{{context.crop}}</h1>
+                  {% endif %}
                    <div class="describe">
                      <ul class="list-group">
                      {% for rule in context.rules %}
@@ -647,12 +664,8 @@
           <table class="table table-striped" id = "weather1">
            <tbody>
              <tr>
-               <th scope="row">Minimum Temperature</th>
-               <td>{{context['weather'][1]['main'].temp_min}} degrees celsius</td>
-             </tr>
-             <tr>
-               <th scope="row">Maximum Temperature</th>
-               <td>{{context['weather'][1]['main'].temp_max}} degrees celsius</td>
+               <th scope="row">Temperature</th>
+               <td>{{context['weather'][1]['main'].temp}} degrees celsius</td>
              </tr>
              <tr>
                <th scope="row">Wind</th>
@@ -685,12 +698,8 @@
              <table class="table table-striped" id = "farmer_update_table">
                <tbody>
                  <tr>
-                   <th scope="row">Minimum Temperature</th>
-                   <td>{{context['weather'][2]['main'].temp_min}} degrees celsius</td>
-                 </tr>
-                 <tr>
-                   <th scope="row">Maximum Temperature</th>
-                   <td>{{context['weather'][2]['main'].temp_max}} degrees celsius</td>
+                   <th scope="row">Temperature</th>
+                   <td>{{context['weather'][2]['main'].temp}} degrees celsius</td>
                  </tr>
                  <tr>
                    <th scope="row">Wind</th>
@@ -723,12 +732,8 @@
           <table class="table table-striped" id = "farmer_update_table">
             <tbody>
               <tr>
-                <th scope="row">Minimum Temperature</th>
-                <td>{{context['weather'][3]['main'].temp_min}} degrees celsius</td>
-              </tr>
-              <tr>
-                <th scope="row">Maximum Temperature</th>
-                <td>{{context['weather'][3]['main'].temp_max}} degrees celsius</td>
+                <th scope="row">Temperature</th>
+                <td>{{context['weather'][3]['main'].temp}} degrees celsius</td>
               </tr>
               <tr>
                 <th scope="row">Wind</th>
@@ -761,12 +766,8 @@
           <table class="table table-striped" id = "farmer_update_table">
             <tbody>
               <tr>
-                <th scope="row">Minimum Temperature</th>
-                <td>{{context['weather'][4]['main'].temp_min}} degrees celsius</td>
-              </tr>
-              <tr>
-                <th scope="row">Maximum Temperature</th>
-                <td>{{context['weather'][4]['main'].temp_max}} degrees celsius</td>
+                <th scope="row">Temperature</th>
+                <td>{{context['weather'][4]['main'].temp}} degrees celsius</td>
               </tr>
               <tr>
                 <th scope="row">Wind</th>
