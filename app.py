@@ -90,7 +90,6 @@ def index():
 
 
     rules = Rules.query.all()
-
     crop = request.form.get("selected_crop")
 
     context = {
@@ -100,6 +99,61 @@ def index():
             }
 
     return render_template('home.html', context=context)
+
+#VoiceEnglish
+@app.route('/voice', methods=['GET', 'POST'])
+def voice():
+    url = 'https://api.openweathermap.org/data/2.5/forecast?lat=12.3657&lon=-1.5339&units=metric&appid=454d3e3138f204980589ae958b2a9728'
+    result = requests.get(url).json()
+    all_data = result['list']
+
+    weather = {}
+    weather[0] = result['city']
+    for data in all_data:
+        dayUnix = data['dt']
+        round = data['main']['temp']
+        data['main']['temp'] = math.ceil(round)
+        date = datetime.fromtimestamp(dayUnix)
+        s = datetime.now() + timedelta(days=1)
+        x = datetime.now() + timedelta(days=2)
+        y = datetime.now() + timedelta(days=3)
+        z = datetime.now() + timedelta(days=4)
+        if s > date < x:
+            ts = time.gmtime(dayUnix)
+            day_of_week = time.strftime("%A", ts)
+            data['dt'] = day_of_week
+            weather[1] = data
+        if  s < date < x:
+            ts = time.gmtime(dayUnix)
+            day_of_week = time.strftime("%A", ts)
+            data['dt'] = day_of_week
+            weather[2] = data
+        if  s < date < y:
+            ts = time.gmtime(dayUnix)
+            day_of_week = time.strftime("%A", ts)
+            data['dt'] = day_of_week
+            weather[3] = data
+        if  s < date < z:
+            ts = time.gmtime(dayUnix)
+            day_of_week = time.strftime("%A", ts)
+            data['dt'] = day_of_week
+            weather[4] = data
+
+
+    rules = Rules.query.all()
+    posts = Posts.query.all()
+
+    context = {
+            'weather': weather,
+            'rules': rules,
+            'posts': posts,
+            }
+    return render_template('voice.xml', context=context)
+
+#VoiceFrench
+@app.route('/voice_french')
+def voice_french():
+    return render_template('voice_french.xml')
 
 #About
 @app.route('/about')
