@@ -14,7 +14,7 @@
 <form id="welcome">
      <block>
        <prompt>
-            <audio src="static/voice/welcome.wav"/>
+            <audio src="static/voice/Welcome_to.wav"/>
        </prompt>
          <goto next="#menu"/>
      </block>
