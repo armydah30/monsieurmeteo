@@ -201,10 +201,10 @@ def voice_french():
             }
     return render_template('voice_french.xml', context=context)
 
-#About
-@app.route('/about')
-def about():
-    return render_template('about.html')
+#AboutVoiceInterface
+@app.route('/voice_interface')
+def voice_interface():
+    return render_template('voice_interface.html')
 
 #Posts Page
 @app.route('/posts')
