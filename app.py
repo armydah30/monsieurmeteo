@@ -11,11 +11,16 @@ import geocoder
 import time
 from datetime import datetime, timedelta
 import math
+from werkzeug.utils import secure_filename
+
+UPLOAD_FOLDER = 'static/voice'
+ALLOWED_EXTENSIONS = set(['wav'])
 
 app = Flask(__name__)
-app.debug = False
+app.debug = True
 app.config['SECRET_KEY'] = '12345'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mrmeteo2.db'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 
@@ -97,7 +102,6 @@ def index():
             'rules': rules,
             'crop': crop,
             }
-
     return render_template('home.html', context=context)
 
 #VoiceEnglish
@@ -218,7 +222,6 @@ def posts():
             msg = 'No Posts Found'
             return render_template('posts.html', msg=msg)
 
-
 #Single post
 @app.route('/post/<string:id>/')
 def post(id):
@@ -328,6 +331,10 @@ class PostForm(Form):
     title = StringField('Title', [validators.Length(min=1, max=200)])
     body = TextAreaField('Body', [validators.Length(min=30)])
 
+#Upload Files for Posts
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 #Add Post
 @app.route('/add_post', methods=['POST', 'GET'])
 @is_logged_in
@@ -342,7 +349,72 @@ def add_post():
         db.session.commit()
         flash('New Post Created', 'success')
 
-        return redirect(url_for('posts'))
+    posts = Posts.query.all()
+    post_id = len(posts)
+    post_title = 'post_' + str(post_id) + '.wav'
+    post_content = 'post_' + str(post_id) + '_content' + '.wav'
+    post_title_fr = 'post_' + str(post_id) + '_fr'  + '.wav'
+    post_content_fr = 'post_' + str(post_id) + '_content' + '_fr' + '.wav'
+
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file_title' not in request.files:
+            flash('Please Upload Files')
+            return redirect(request.url)
+        if 'file_content' not in request.files:
+            flash('Please Upload Files')
+            return redirect(request.url)
+        file_title = request.files['file_title']
+        file_content = request.files['file_content']
+        # if user does not select file, browser also
+        # submit a empty part without filename
+        if file_title.filename == '':
+            flash('Please Upload Audio of Post Title')
+            return redirect(request.url)
+        if file_content.filename == '':
+            flash('Please Upload Audio of Post Content')
+            return redirect(request.url)
+        if file_title and allowed_file(file_title.filename):
+            filename = secure_filename(post_title)
+            file_title.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            flash('Post Title Uploaded Successfully')
+        else:
+            flash('Please Upload .wav File for the Title')
+        if file_content and allowed_file(file_content.filename):
+            filename = secure_filename(post_content)
+            file_content.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            flash('Post Content Uploaded Successfully')
+        else:
+            flash('Please Upload a .wav File for the Content')
+
+#French Uploads
+        if 'file_title_fr' not in request.files:
+            flash('Please Upload Files')
+            return redirect(request.url)
+        if 'file_content_fr' not in request.files:
+            flash('Please Upload Files')
+            return redirect(request.url)
+        file_title_fr = request.files['file_title_fr']
+        file_content_fr = request.files['file_content_fr']
+
+        if file_title_fr.filename == '':
+            flash('Please Upload Audio of Post Title')
+            return redirect(request.url)
+        if file_content_fr.filename == '':
+            flash('Please Upload Audio of Post Content')
+            return redirect(request.url)
+        if file_title_fr and allowed_file(file_title_fr.filename):
+            filename = secure_filename(post_title_fr)
+            file_title_fr.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            flash('Post Title Uploaded Successfully')
+        else:
+            flash('Please Upload .wav File for the Title')
+        if file_content_fr and allowed_file(file_content_fr.filename):
+            filename = secure_filename(post_content_fr)
+            file_content_fr.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            flash('Post Content Uploaded Successfully')
+        else:
+            flash('Please Upload a .wav File for the Content')
 
     return render_template('add_post.html', form=form)
 
@@ -445,7 +517,84 @@ def edit_rule(id):
 
         return render_template('edit_rule.html', form=form)
 
-
+# @app.route('/test', methods=['GET', 'POST'])
+# def test():
+#     form = PostForm(request.form)
+#     if request.method == 'POST' and form.validate():
+#         title = form.title.data
+#         body = form.body.data
+#
+#         post = Posts(title=title, body=body, create_date=datetime.now())
+#         db.session.add(post)
+#         db.session.commit()
+#         flash('New Post Created', 'success')
+#
+#     posts = Posts.query.all()
+#     post_id = len(posts)
+#     post_title = 'post_' + str(post_id) + '.wav'
+#     post_content = 'post_' + str(post_id) + '_content' + '.wav'
+#     post_title_fr = 'post_' + str(post_id) + '_fr'  + '.wav'
+#     post_content_fr = 'post_' + str(post_id) + '_content' + '_fr' + '.wav'
+#
+#     if request.method == 'POST':
+#         # check if the post request has the file part
+#         if 'file_title' not in request.files:
+#             flash('Please Upload Files')
+#             return redirect(request.url)
+#         if 'file_content' not in request.files:
+#             flash('Please Upload Files')
+#             return redirect(request.url)
+#         file_title = request.files['file_title']
+#         file_content = request.files['file_content']
+#         # if user does not select file, browser also
+#         # submit a empty part without filename
+#         if file_title.filename == '':
+#             flash('Please Upload Audio of Post Title')
+#             return redirect(request.url)
+#         if file_content.filename == '':
+#             flash('Please Upload Audio of Post Content')
+#             return redirect(request.url)
+#         if file_title and allowed_file(file_title.filename):
+#             filename = secure_filename(post_title)
+#             file_title.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+#             flash('Post Title Uploaded Successfully')
+#         else:
+#             flash('Please Upload .wav File for the Title')
+#         if file_content and allowed_file(file_content.filename):
+#             filename = secure_filename(post_content)
+#             file_content.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+#             flash('Post Content Uploaded Successfully')
+#         else:
+#             flash('Please Upload a .wav File for the Content')
+#
+#         if 'file_title_fr' not in request.files:
+#             flash('Please Upload Files')
+#             return redirect(request.url)
+#         if 'file_content_fr' not in request.files:
+#             flash('Please Upload Files')
+#             return redirect(request.url)
+#         file_title_fr = request.files['file_title_fr']
+#         file_content_fr = request.files['file_content_fr']
+#
+#         if file_title_fr.filename == '':
+#             flash('Please Upload Audio of Post Title')
+#             return redirect(request.url)
+#         if file_content_fr.filename == '':
+#             flash('Please Upload Audio of Post Content')
+#             return redirect(request.url)
+#         if file_title_fr and allowed_file(file_title_fr.filename):
+#             filename = secure_filename(post_title_fr)
+#             file_title_fr.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+#             flash('Post Title Uploaded Successfully')
+#         else:
+#             flash('Please Upload .wav File for the Title')
+#         if file_content_fr and allowed_file(file_content_fr.filename):
+#             filename = secure_filename(post_content_fr)
+#             file_content_fr.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+#             flash('Post Content Uploaded Successfully')
+#         else:
+#             flash('Please Upload a .wav File for the Content')
+#     return render_template('test.html', form=form)
 
 #LogOut
 @app.route('/logout')
